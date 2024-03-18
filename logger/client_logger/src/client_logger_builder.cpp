@@ -1,15 +1,18 @@
 #include <not_implemented.h>
+#include "../include/client_logger.h"
 
 #include "../include/client_logger_builder.h"
 
 client_logger_builder::client_logger_builder()
 {
+
     throw not_implemented("client_logger_builder::client_logger_builder()", "your code should be here...");
 }
 
 client_logger_builder::client_logger_builder(
     client_logger_builder const &other)
 {
+
     throw not_implemented("client_logger_builder::client_logger_builder(client_logger_builder const &other)", "your code should be here...");
 }
 
@@ -63,5 +66,7 @@ logger_builder *client_logger_builder::clear()
 
 logger *client_logger_builder::build() const
 {
+    auto* a = new client_logger(data);
+    return a; // TODO ADD try catch
     throw not_implemented("logger *client_logger_builder::build() const", "your code should be here...");
 }

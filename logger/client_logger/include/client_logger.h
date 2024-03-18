@@ -4,9 +4,24 @@
 #include <logger.h>
 #include "client_logger_builder.h"
 
+#include <map>
+#include <unordered_map>
+#include <set>
+#include <string>
+#include <fstream>
+
 class client_logger final:
     public logger
 {
+    friend class client_logger_builder;
+
+private:
+    std::map<std::string, std::pair<std::ofstream *, std::set<logger::severity>>> _streams;
+private:
+    static std::unordered_map<std::string, std::pair<std::ofstream *, size_t>> _all_streams;
+
+private:
+    explicit client_logger(const std::map<std::string, std::set<logger::severity>>& data);
 
 public:
 

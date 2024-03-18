@@ -2,12 +2,17 @@
 #define MATH_PRACTICE_AND_OPERATING_SYSTEMS_CLIENT_LOGGER_BUILDER_H
 
 #include <logger_builder.h>
+#include <map>
+#include <set>
 
 class client_logger_builder final:
     public logger_builder
 {
 
+private: std::map<std::string, std::set<logger::severity>> data;
+
 public:
+
 
     client_logger_builder();
 
