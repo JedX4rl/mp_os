@@ -9,7 +9,8 @@ FetchContent_MakeAvailable(json)
 add_library(
         mp_os_lggr_clnt_lggr
         src/client_logger.cpp
-        src/client_logger_builder.cpp)
+        src/client_logger_builder.cpp
+        include/client_logger.h)
 target_include_directories(
         mp_os_lggr_clnt_lggr
         PUBLIC
@@ -29,7 +30,7 @@ target_link_libraries(
 set_target_properties(
         mp_os_lggr_clnt_lggr PROPERTIES
         LANGUAGES CXX
-        CXX_STANDARD 14
+        CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
         VERSION 1.0

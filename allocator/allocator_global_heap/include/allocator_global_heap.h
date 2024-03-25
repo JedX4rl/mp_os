@@ -17,6 +17,10 @@ private:
     logger *_logger;
 
 public:
+
+    size_t get_allocated_size(void const* memory);
+
+    std::string get_byte_dump(unsigned char c);
     
     explicit allocator_global_heap(
         logger *logger = nullptr);
@@ -53,10 +57,7 @@ private:
     
     inline logger *get_logger() const override;
 
-private:
-    
     inline std::string get_typename() const noexcept override;
-
 public:
 
 };

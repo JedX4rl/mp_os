@@ -10,17 +10,21 @@ class server_logger final:
 
 public:
 
-    server_logger(
-        server_logger const &other);
+    void init(void);
 
-    server_logger &operator=(
-        server_logger const &other);
+    server_logger();
 
     server_logger(
-        server_logger &&other) noexcept;
+        server_logger const &other) = delete;
 
     server_logger &operator=(
-        server_logger &&other) noexcept;
+        server_logger const &other) = delete;
+
+    server_logger(
+        server_logger &&other) noexcept = delete;
+
+    server_logger &operator=(
+        server_logger &&other) noexcept = delete;
 
     ~server_logger() noexcept final;
 

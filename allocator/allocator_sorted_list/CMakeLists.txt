@@ -4,7 +4,8 @@ project(mp_os_allctr_allctr_srtd_lst)
 add_subdirectory(tests)
 add_library(
         mp_os_allctr_allctr_srtd_lst
-        src/allocator_sorted_list.cpp)
+        src/allocator_sorted_list.cpp
+        include/allocator_sorted_list.h)
 target_include_directories(
         mp_os_allctr_allctr_srtd_lst
         PUBLIC

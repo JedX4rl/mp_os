@@ -1,0 +1,16 @@
+logg_1
+{
+    log_12
+    {
+        default
+        file_1:tf
+        file_2:tf
+    }
+    log_13
+    {
+        %t %m %d
+        "for_log":i
+        file_2:w
+    }
+}
+

@@ -9,7 +9,8 @@ FetchContent_MakeAvailable(json)
 add_library(
         mp_os_lggr_srvr_lggr
         src/server_logger.cpp
-        src/server_logger_builder.cpp)
+        src/server_logger_builder.cpp
+        include/server_logger.h)
 target_include_directories(
         mp_os_lggr_srvr_lggr
         PUBLIC

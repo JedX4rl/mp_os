@@ -3,6 +3,7 @@
 
 #include <logger.h>
 #include "client_logger_builder.h"
+#include "nlohmann/json.hpp"
 
 #include <map>
 #include <unordered_map>
@@ -19,23 +20,32 @@ private:
     std::map<std::string, std::pair<std::ofstream *, std::set<logger::severity>>> _streams;
 private:
     static std::unordered_map<std::string, std::pair<std::ofstream *, size_t>> _all_streams;
+private:
+    std::string _log_structure;
+
+
 
 private:
-    explicit client_logger(const std::map<std::string, std::set<logger::severity>>& data);
+    explicit client_logger(std::map<std::string, std::set<logger::severity>> const& data,
+                           std::string const &_log_structure);
+    
+private:
+    [[nodiscard]] std::string parse_string(
+            std::string const &logger_msg, logger::severity severity) const;
 
 public:
 
     client_logger(
-        client_logger const &other);
+        client_logger const &other) = delete; //TODO Rule of five
 
     client_logger &operator=(
-        client_logger const &other);
+        client_logger const &other) = delete;
 
     client_logger(
-        client_logger &&other) noexcept;
+        client_logger &&other) noexcept = delete;
 
     client_logger &operator=(
-        client_logger &&other) noexcept;
+        client_logger &&other) noexcept = delete;
 
     ~client_logger() noexcept final;
 

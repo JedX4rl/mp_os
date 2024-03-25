@@ -60,12 +60,22 @@ std::string logger::severity_to_string(
     throw std::out_of_range("Invalid severity value");
 }
 
-std::string logger::current_datetime_to_string() noexcept
+std::string logger::current_date_to_string() noexcept
 {
     auto time = std::time(nullptr);
 
     std::ostringstream result_stream;
-    result_stream << std::put_time(std::localtime(&time), "%d.%m.%Y %H:%M:%S");
+    result_stream << std::put_time(std::localtime(&time), "%d.%m.%Y");
+
+    return result_stream.str();
+}
+
+std::string logger::current_time_to_string() noexcept
+{
+    auto time = std::time(nullptr);
+
+    std::ostringstream result_stream;
+    result_stream << std::put_time(std::localtime(&time), "%H:%M:%S");
 
     return result_stream.str();
 }
