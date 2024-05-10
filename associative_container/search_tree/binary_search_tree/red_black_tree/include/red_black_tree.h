@@ -54,7 +54,7 @@ public:
 
         typename red_black_tree<tkey, tvalue>::node_color _color;
 
-        typename red_black_tree<tkey, tvalue>::node_color get_color() const; //TODO should i add noexcept?
+        typename red_black_tree<tkey, tvalue>::node_color get_color() const;
 
     public:
 

@@ -26,7 +26,7 @@ private:
                 tkey const &key,
                 tvalue const &value) :
                 binary_search_tree<tkey, tvalue>::node(key, value),
-                node_subtree_height(1) // TODO move from here
+                node_subtree_height(1)
         {
 
         }
@@ -35,7 +35,7 @@ private:
                 tkey const &key,
                 tvalue &&value) :
                 binary_search_tree<tkey, tvalue>::node(key, std::move(value)),
-                node_subtree_height(1) // TODO move from here
+                node_subtree_height(1)
         {
 
         }
@@ -298,7 +298,7 @@ typename binary_search_tree<tkey, tvalue>::iterator_data *AVL_tree<tkey, tvalue>
         unsigned int depth,
         typename binary_search_tree<tkey, tvalue>::node *&source) const
 {
-    return new iterator_data(depth, reinterpret_cast<AVL_tree<tkey, tvalue>::node**>(&source)); //TODO check if i should remove &;
+    return new iterator_data(depth, reinterpret_cast<AVL_tree<tkey, tvalue>::node**>(&source));
 }
 
 template<

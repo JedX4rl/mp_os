@@ -297,7 +297,7 @@ inline std::mutex &allocator_boundary_tags::get_mutex() const
     return *reinterpret_cast<std::mutex*>(temp_pointer);
 }
 
-inline allocator_with_fit_mode::fit_mode &allocator_boundary_tags::get_fit_mode() const //TODO should we add "inline"?
+inline allocator_with_fit_mode::fit_mode &allocator_boundary_tags::get_fit_mode() const
 {
     auto* temp_pointer = reinterpret_cast<unsigned char*>(_trusted_memory);
     temp_pointer += sizeof(allocator*) + sizeof(logger*) + sizeof(std::mutex);

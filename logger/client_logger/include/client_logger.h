@@ -36,7 +36,7 @@ private:
 public:
 
     client_logger(
-        client_logger const &other); //TODO Rule of five
+        client_logger const &other);
 
     client_logger &operator=(
         client_logger const &other);

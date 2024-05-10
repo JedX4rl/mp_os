@@ -1495,7 +1495,7 @@ typename binary_search_tree<tkey, tvalue>::const_iterator const binary_search_tr
 {
     auto iterator = *this;
     ++*this;
-    return iterator; //TODO is it correct?
+    return iterator;
 }
 
 
@@ -1547,7 +1547,7 @@ binary_search_tree<tkey, tvalue>::iterator::iterator(iterator const &other):
 }
 
 template <
-        typename tkey, //TODO check if it works or should i add std::move
+        typename tkey,
         typename tvalue>
 binary_search_tree<tkey, tvalue>::iterator::iterator(iterator &&other):
         const_iterator(std::move(other))

@@ -138,7 +138,6 @@ allocator_sorted_list::allocator_sorted_list(
         requested_size = get_avaible_block_size(target_block);
     }
 
-    // TODO: You can do it! :)
 }
 
 void allocator_sorted_list::deallocate(
