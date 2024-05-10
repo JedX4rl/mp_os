@@ -587,60 +587,112 @@ void red_black_tree<tkey, tvalue>::disposal_template_method::balance(std::stack<
     if (node_to_dispose->left_subtree || node_to_dispose->right_subtree)
     {
         dynamic_cast<red_black_tree<tkey, tvalue>::node*>(*(path.top()))->color = node_color::BLACK;
+        return;
     }
-    else
+
+    bool black_height_failure = true;
+
+    while (path.size() >= 2 && black_height_failure)
     {
-        bool black_height_failure = true;
+        black_height_failure = false;
 
-        while (path.size() >= 2 && black_height_failure)
+        typename binary_search_tree<tkey, tvalue>::node** current_node = path.top();
+        path.pop();
+        typename binary_search_tree<tkey, tvalue>::node** parent = path.top();
+
+        bool is_right_subtree = (*parent)->right_subtree == *current_node;
+
+        typename binary_search_tree<tkey, tvalue>::node** brother = is_right_subtree
+                                                                    ? &(*parent)->left_subtree
+                                                                    : &(*parent)->right_subtree;
+
+        typename binary_search_tree<tkey, tvalue>::node** nephew = is_right_subtree
+                                                                   ? &(*brother)->right_subtree
+                                                                   : &(*brother)->left_subtree;
+
+        typename binary_search_tree<tkey, tvalue>::node** second_nephew = is_right_subtree
+                                                                            ? &(*brother)->left_subtree
+                                                                            : &(*brother)->right_subtree;
+
+        if (get_color(*parent) == node_color::RED) //Case 1: Red parent
         {
-            black_height_failure = false;
-
-            typename binary_search_tree<tkey, tvalue>::node** current_node = path.top();
-            path.pop();
-            typename binary_search_tree<tkey, tvalue>::node** parent = path.top();
-
-            bool is_right_subtree = (*parent)->right_subtree == *current_node;
-
-            typename binary_search_tree<tkey, tvalue>::node** brother = is_right_subtree
-                                                                        ? &(*parent)->left_subtree
-                                                                        : &(*parent)->right_subtree;
-
-            typename binary_search_tree<tkey, tvalue>::node** nephew = is_right_subtree
-                                                                       ? &(*brother)->right_subtree
-                                                                       : &(*brother)->left_subtree;
-
-            typename binary_search_tree<tkey, tvalue>::node** second_nephew = is_right_subtree
-                                                                                ? &(*brother)->left_subtree
-                                                                                : &(*brother)->right_subtree;
-
-            if (get_color(*parent) == node_color::RED) //Case 1: Red parent
+            if (get_color(*brother) == node_color::BLACK)
             {
-                if (get_color(*brother) == node_color::BLACK)
+                if (get_color(*nephew) == node_color::BLACK && get_color(*second_nephew) == node_color::BLACK)
                 {
-                    if (get_color(*nephew) == node_color::BLACK && get_color(*second_nephew) == node_color::BLACK)
-                    {
-                        set_color(*parent, node_color::BLACK);
-                        set_color(*brother, node_color::RED);
-                    }
-                    if (get_color(*second_nephew) == node_color::RED)
-                    {
-                        set_color(*brother, node_color::RED);
-                        set_color(*parent, node_color::BLACK);
-                        set_color(*second_nephew, node_color::BLACK);
+                    set_color(*parent, node_color::BLACK);
+                    set_color(*brother, node_color::RED);
+                }
+                if (get_color(*second_nephew) == node_color::RED)
+                {
+                    set_color(*brother, node_color::RED);
+                    set_color(*parent, node_color::BLACK);
+                    set_color(*second_nephew, node_color::BLACK);
 
+                    if (is_right_subtree)
+                    {
+                        dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_right_rotation(*parent);
+                    }
+                    else
+                    {
+                        dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_left_rotation(*parent);
+                    }
+                }
+                else
+                {
+                    set_color(*parent, node_color::BLACK);
+                    if (is_right_subtree)
+                    {
+                        dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_right_rotation(*parent);
+                    }
+                    else
+                    {
+                        dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_left_rotation(*parent);
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (get_color(*brother) == node_color::RED) //Red brother
+            {
+                typename binary_search_tree<tkey, tvalue>::node** grandnephew = is_right_subtree
+                                                                                ? &(*nephew)->right_subtree
+                                                                                : &(*nephew)->left_subtree;
+
+                typename binary_search_tree<tkey, tvalue>::node** second_grandnephew = is_right_subtree
+                                                                                         ? &(*nephew)->left_subtree
+                                                                                         : &(*nephew)->right_subtree;
+
+                if (get_color(*grandnephew) == node_color::BLACK && get_color(*second_nephew) == node_color::BLACK)
+                {
+                    set_color(*brother, node_color::BLACK);
+                    set_color(*nephew, node_color::RED);
+                    if (is_right_subtree)
+                    {
+                        dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_right_rotation(*parent);
+                    }
+                    else
+                    {
+                        dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_left_rotation(*parent);
+                    }
+                }
+                else
+                {
+                    if (get_color(*second_grandnephew) == node_color::RED)
+                    {
+                        set_color(*second_grandnephew, node_color::BLACK);
                         if (is_right_subtree)
                         {
-                            dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_right_rotation(*parent);
+                            dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_right_rotation(*parent);
                         }
                         else
                         {
-                            dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_left_rotation(*parent);
+                            dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_left_rotation(*parent);
                         }
                     }
                     else
                     {
-                        set_color(*parent, node_color::BLACK);
                         if (is_right_subtree)
                         {
                             dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_right_rotation(*parent);
@@ -651,23 +703,32 @@ void red_black_tree<tkey, tvalue>::disposal_template_method::balance(std::stack<
                         }
                     }
                 }
+
             }
             else
             {
-                if (get_color(*brother) == node_color::RED) //Red brother
+                if (get_color(*nephew) == node_color::BLACK && get_color(*second_nephew) == node_color::BLACK)
                 {
-                    typename binary_search_tree<tkey, tvalue>::node** grandnephew = is_right_subtree
-                                                                                    ? &(*nephew)->right_subtree
-                                                                                    : &(*nephew)->left_subtree;
-
-                    typename binary_search_tree<tkey, tvalue>::node** second_grandnephew = is_right_subtree
-                                                                                             ? &(*nephew)->left_subtree
-                                                                                             : &(*nephew)->right_subtree;
-
-                    if (get_color(*grandnephew) == node_color::BLACK && get_color(*second_nephew) == node_color::BLACK)
+                    set_color(*brother, node_color::RED);
+                    black_height_failure = true;
+                }
+                else
+                {
+                    if (get_color(*nephew) == node_color::RED)
                     {
-                        set_color(*brother, node_color::BLACK);
-                        set_color(*nephew, node_color::RED);
+                        set_color(*nephew, node_color::BLACK);
+                        if (is_right_subtree)
+                        {
+                            dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_right_rotation(*parent);
+                        }
+                        else
+                        {
+                            dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_left_rotation(*parent);
+                        }
+                    }
+                    else
+                    {
+                        set_color(*second_nephew, node_color::BLACK);
                         if (is_right_subtree)
                         {
                             dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_right_rotation(*parent);
@@ -677,72 +738,9 @@ void red_black_tree<tkey, tvalue>::disposal_template_method::balance(std::stack<
                             dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_left_rotation(*parent);
                         }
                     }
-                    else
-                    {
-                        if (get_color(*second_grandnephew) == node_color::RED)
-                        {
-                            set_color(*second_grandnephew, node_color::BLACK);
-                            if (is_right_subtree)
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_right_rotation(*parent);
-                            }
-                            else
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_left_rotation(*parent);
-                            }
-                        }
-                        else
-                        {
-                            if (is_right_subtree)
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_right_rotation(*parent);
-                            }
-                            else
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_left_rotation(*parent);
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    if (get_color(*nephew) == node_color::BLACK && get_color(*second_nephew) == node_color::BLACK)
-                    {
-                        set_color(*brother, node_color::RED);
-                        black_height_failure = true;
-                    }
-                    else
-                    {
-                        if (get_color(*nephew) == node_color::RED)
-                        {
-                            set_color(*nephew, node_color::BLACK);
-                            if (is_right_subtree)
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_right_rotation(*parent);
-                            }
-                            else
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->big_left_rotation(*parent);
-                            }
-                        }
-                        else
-                        {
-                            set_color(*second_nephew, node_color::BLACK);
-                            if (is_right_subtree)
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_right_rotation(*parent);
-                            }
-                            else
-                            {
-                                dynamic_cast<red_black_tree<tkey, tvalue>*>(this->_tree)->small_left_rotation(*parent);
-                            }
-                        }
-                    }
                 }
             }
         }
     }
-
 }
 #endif //MATH_PRACTICE_AND_OPERATING_SYSTEMS_RED_BLACK_TREE_H
