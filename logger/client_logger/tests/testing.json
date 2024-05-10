@@ -1,0 +1,15 @@
+{
+  "logger":
+  {
+    "format": "%m %t %d",
+    "paths": {
+      "a": "debug",
+      "b": "information",
+      "c": [
+        "debug",
+        "warning",
+        "information"
+      ]
+    }
+  }
+}
