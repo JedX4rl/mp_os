@@ -3,8 +3,7 @@
 
 #include <logger.h>
 #include "client_logger_builder.h"
-#include "nlohmann/json.hpp"
-
+#include <not_implemented.h>
 #include <map>
 #include <unordered_map>
 #include <set>
@@ -32,20 +31,21 @@ private:
 private:
     [[nodiscard]] std::string parse_string(
             std::string const &logger_msg, logger::severity severity) const;
+    static void decrement_streams(std::string const &file_path) noexcept;
 
 public:
 
     client_logger(
-        client_logger const &other) = delete; //TODO Rule of five
+        client_logger const &other); //TODO Rule of five
 
     client_logger &operator=(
-        client_logger const &other) = delete;
+        client_logger const &other);
 
     client_logger(
-        client_logger &&other) noexcept = delete;
+        client_logger &&other) noexcept;
 
     client_logger &operator=(
-        client_logger &&other) noexcept = delete;
+        client_logger &&other) noexcept;
 
     ~client_logger() noexcept final;
 

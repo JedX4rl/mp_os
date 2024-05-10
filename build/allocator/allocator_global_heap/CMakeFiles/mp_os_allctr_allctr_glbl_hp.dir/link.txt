@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libmp_os_allctr_allctr_glbl_hp.a CMakeFiles/mp_os_allctr_allctr_glbl_hp.dir/src/allocator_global_heap.cpp.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libmp_os_allctr_allctr_glbl_hp.a

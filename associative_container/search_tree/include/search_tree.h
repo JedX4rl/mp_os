@@ -11,6 +11,7 @@
 #include <associative_container.h>
 #include <logger.h>
 #include <logger_guardant.h>
+#include <string>
 #include <not_implemented.h>
 
 template<
@@ -47,18 +48,29 @@ protected:
     
     std::function<int(tkey const &, tkey const &)> _keys_comparer;
 
-private:
-    
+    class default_keys_comparer final
+    {
+        public:
+        int operator()
+                (int first, int second);
+
+    };
+
+protected:
+
+    void *_root;
+
     logger *_logger;
-    
+
     allocator *_allocator;
 
 protected:
     
     explicit search_tree(
-        std::function<int(tkey const &, tkey const &)> keys_comparer = std::less<tkey>(),
+        std::function<int(tkey const &, tkey const &)> keys_comparer = std::less<tkey>(), //key comparator ( tkey const &, tkey const & ) -> int
+        allocator *allocator = nullptr,
         logger *logger = nullptr,
-        allocator *allocator = nullptr);
+        void *_root = nullptr); //search tree constructor
     
 public:
     
@@ -101,10 +113,15 @@ template<
     typename tvalue>
 search_tree<tkey, tvalue>::search_tree(
     std::function<int(tkey const &, tkey const &)> keys_comparer,
+    allocator *allocator,
     logger *logger,
-    allocator *allocator)
+    void *root):
+    _keys_comparer(keys_comparer),
+    _logger(logger),
+    _allocator(allocator),
+    _root(root)
 {
-    throw not_implemented("template<typename tkey, typename tvalue> search_tree<tkey, tvalue>::search_tree(std::function<int(tkey const &, tkey const &)>, logger *, allocator *)", "your code should be here...");
+
 }
 
 template<
@@ -112,7 +129,7 @@ template<
     typename tvalue>
 [[nodiscard]] inline allocator *search_tree<tkey, tvalue>::get_allocator() const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> [[nodiscard]] inline allocator *search_tree<tkey, tvalue>::get_allocator() const", "your code should be here...");
+    return _allocator;
 }
 
 template<
@@ -120,7 +137,15 @@ template<
     typename tvalue>
 [[nodiscard]] inline logger *search_tree<tkey, tvalue>::get_logger() const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> [[nodiscard]] inline logger *search_tree<tkey, tvalue>::get_logger() const", "your code should be here...");
+    return _logger;
 }
 
+
+template<
+        typename tkey,
+        typename tvalue>
+int search_tree<tkey, tvalue>::default_keys_comparer::operator()(int first, int second)
+{
+    return first - second;
+}
 #endif //MATH_PRACTICE_AND_OPERATING_SYSTEMS_SEARCH_TREE_H

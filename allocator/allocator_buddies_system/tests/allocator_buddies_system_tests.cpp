@@ -37,9 +37,17 @@ TEST(positiveTests, test1)
             {
                 "allocator_buddies_system_positiveTests_test1.txt",
                 logger::severity::information
+            },
+            {
+                    "allocator_buddies_system_positiveTests_test1.txt",
+                    logger::severity::debug
+            },
+            {
+                    "allocator_buddies_system_positiveTests_test1.txt",
+                    logger::severity::trace
             }
         });
-    allocator *allocator_instance = new allocator_buddies_system(12, nullptr, logger_instance, allocator_with_fit_mode::fit_mode::first_fit);
+    allocator_buddies_system *allocator_instance = new allocator_buddies_system(12, nullptr, logger_instance, allocator_with_fit_mode::fit_mode::first_fit);
 
     auto actual_blocks_state = dynamic_cast<allocator_test_utils *>(allocator_instance)->get_blocks_info();
     std::vector<allocator_test_utils::block_info> expected_blocks_state
@@ -61,20 +69,28 @@ TEST(positiveTests, test2)
 {
     logger *logger_instance = create_logger(std::vector<std::pair<std::string, logger::severity>>
         {
-            {
-                "allocator_buddies_system_positiveTests_test1.txt",
-                logger::severity::information
-            }
+                {
+                        "allocator_buddies_system_positiveTests_test2.txt",
+                        logger::severity::information
+                },
+                {
+                        "allocator_buddies_system_positiveTests_test2.txt",
+                        logger::severity::debug
+                },
+                {
+                        "allocator_buddies_system_positiveTests_test2.txt",
+                        logger::severity::trace
+                }
         });
-    allocator *allocator_instance = new allocator_buddies_system(8, nullptr, logger_instance, allocator_with_fit_mode::fit_mode::first_fit);
+    allocator_buddies_system *allocator_instance = new allocator_buddies_system(8, nullptr, logger_instance, allocator_with_fit_mode::fit_mode::first_fit);
 
     void *first_block = allocator_instance->allocate(sizeof(unsigned char), 40);
-
+    void* sec_block = allocator_instance->allocate(sizeof(unsigned char), 40);
     auto actual_blocks_state = dynamic_cast<allocator_test_utils *>(allocator_instance)->get_blocks_info();
     std::vector<allocator_test_utils::block_info> expected_blocks_state
         {
             { .block_size = 64, .is_block_occupied = true },
-            { .block_size = 64, .is_block_occupied = false },
+            { .block_size = 64, .is_block_occupied = true },
             { .block_size = 128, .is_block_occupied = false }
         };
 
@@ -83,9 +99,7 @@ TEST(positiveTests, test2)
     {
         ASSERT_EQ(actual_blocks_state[i], expected_blocks_state[i]);
     }
-
     allocator_instance->deallocate(first_block);
-
     delete allocator_instance;
     delete logger_instance;
 }
@@ -95,11 +109,13 @@ TEST(positiveTests, test3)
     allocator *allocator_instance = new allocator_buddies_system(8, nullptr, nullptr, allocator_with_fit_mode::fit_mode::first_fit);
 
     void *first_block = allocator_instance->allocate(sizeof(unsigned char), 0);
+    auto actual_blocks_state = dynamic_cast<allocator_test_utils *>(allocator_instance)->get_blocks_info();
     void *second_block = allocator_instance->allocate(sizeof(unsigned char), 0);
+    actual_blocks_state = dynamic_cast<allocator_test_utils *>(allocator_instance)->get_blocks_info();
     allocator_instance->deallocate(first_block);
 
-    auto actual_blocks_state = dynamic_cast<allocator_test_utils *>(allocator_instance)->get_blocks_info();
-    ASSERT_EQ(actual_blocks_state.size(), 3);
+    actual_blocks_state = dynamic_cast<allocator_test_utils *>(allocator_instance)->get_blocks_info();
+    ASSERT_EQ(actual_blocks_state.size(), 4);
     ASSERT_EQ(actual_blocks_state[0].block_size, 1 << (static_cast<int>(std::floor(std::log2(sizeof(allocator::block_pointer_t) * 2 + 1))) + 1));
     ASSERT_EQ(actual_blocks_state[0].is_block_occupied, false);
     ASSERT_EQ(actual_blocks_state[0].block_size, actual_blocks_state[1].block_size);

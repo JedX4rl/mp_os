@@ -34,7 +34,7 @@ TEST(allocatorGlobalHeapTests, test2)
         ->build();
     delete logger_builder_instance;
 
-    allocator *allocator_instance = new allocator_global_heap;
+    allocator *allocator_instance = new allocator_global_heap(logger_instance);
 
     auto first_block = reinterpret_cast<char *>(allocator_instance->allocate(sizeof(char), 11));
 

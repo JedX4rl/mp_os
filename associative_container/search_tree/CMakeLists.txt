@@ -5,6 +5,7 @@ add_subdirectory(binary_search_tree)
 #add_subdirectory(indexing_tree)
 add_library(
         mp_os_assctv_cntnr_srch_tr
+        SHARED
         include/search_tree.h)
 target_include_directories(
         mp_os_assctv_cntnr_srch_tr
@@ -33,6 +34,6 @@ set_target_properties(
         LANGUAGES CXX
         LINKER_LANGUAGE CXX
         LINKER_LANGUAGE CXX
-        CXX_STANDARD 14
+        CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)

@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 #include <queue>
+#include "nlohmann/json.hpp"
 
 class client_logger_builder final:
     public logger_builder
@@ -15,8 +16,11 @@ private:
 private:
     std::string _log_structure;
 private:
-    static std::queue<std::string> configuration_path_to_substr(std::string const &conf_path);
-
+    void get_config_info(nlohmann::json &config, std::string const &configuration_path);
+private:
+    static void get_substr_queue(std::string const &str, std::queue<std::string> &queue, char separator);
+private:
+    static logger::severity get_severity(std::string const &severity_str);
 public:
 
     explicit client_logger_builder (std::string const & info);
@@ -58,8 +62,6 @@ public:
         std::string const &configuration_path) override;
 
     logger_builder *clear() override;
-
-    logger_builder *change_log_structure(std::string const & new_structure);
 
 
     [[nodiscard]] logger *build() const override;

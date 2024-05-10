@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libmp_os_lggr_lggr.a CMakeFiles/mp_os_lggr_lggr.dir/src/logger.cpp.o CMakeFiles/mp_os_lggr_lggr.dir/src/logger_builder.cpp.o CMakeFiles/mp_os_lggr_lggr.dir/src/logger_guardant.cpp.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libmp_os_lggr_lggr.a

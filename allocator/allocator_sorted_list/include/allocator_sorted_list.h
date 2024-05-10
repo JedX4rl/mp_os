@@ -72,7 +72,28 @@ private:
 private:
     
     inline std::string get_typename() const noexcept override;
-    
+
+
+private:
+
+    static size_t get_ancillary_space_size() noexcept;
+
+    allocator_with_fit_mode::fit_mode get_fit_mode() const noexcept;
+
+    void *get_first_avaible_block() const noexcept;
+
+private:
+
+    static block_size_t get_avaible_block_size(
+            void *block_address) noexcept;
+
+    static void *get_avaible_block_next_block_address(
+            void *block_address) noexcept;
+
+    static block_size_t get_occupied_block_size(
+            void *block_address) noexcept;
 };
+
+
 
 #endif //MATH_PRACTICE_AND_OPERATING_SYSTEMS_ALLOCATOR_ALLOCATOR_SORTED_LIST_H

@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libmp_os_assctv_cntnr.a 
-/Library/Developer/CommandLineTools/usr/bin/ranlib libmp_os_assctv_cntnr.a

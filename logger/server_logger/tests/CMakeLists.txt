@@ -15,6 +15,9 @@ FetchContent_MakeAvailable(
 add_executable(
         mp_os_lggr_srvr_lggr_tests
         server_logger_tests.cpp)
+add_executable(
+        server_unix_test
+        server_unix.cpp)
 target_link_libraries(
         mp_os_lggr_srvr_lggr_tests
         PRIVATE
@@ -34,7 +37,7 @@ target_link_libraries(
 set_target_properties(
         mp_os_lggr_srvr_lggr_tests PROPERTIES
         LANGUAGES CXX
-        CXX_STANDARD 14
+        CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
         VERSION 1.0

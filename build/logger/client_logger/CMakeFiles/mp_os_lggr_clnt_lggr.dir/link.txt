@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libmp_os_lggr_clnt_lggr.a CMakeFiles/mp_os_lggr_clnt_lggr.dir/src/client_logger.cpp.o CMakeFiles/mp_os_lggr_clnt_lggr.dir/src/client_logger_builder.cpp.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libmp_os_lggr_clnt_lggr.a

@@ -18,9 +18,6 @@ private:
 
 public:
 
-    size_t get_allocated_size(void const* memory);
-
-    std::string get_byte_dump(unsigned char c);
     
     explicit allocator_global_heap(
         logger *logger = nullptr);
@@ -48,16 +45,15 @@ public:
     void deallocate(
         void *at) override;
 
-public:
-    
-    void foo()
-    {};
-
 private:
     
     inline logger *get_logger() const override;
 
     inline std::string get_typename() const noexcept override;
+
+    size_t get_allocated_size(void const* memory);
+
+    std::string get_byte_dump(unsigned char c);
 public:
 
 };

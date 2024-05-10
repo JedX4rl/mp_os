@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <operation_not_supported.h>
+#include <string>
 
 template<
     typename tkey,

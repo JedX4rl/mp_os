@@ -6,11 +6,26 @@ logg_1
         file_1:tf
         file_2:tf
     }
-    log_13
+    log_133131
     {
-        %t %m %d
+        %t %m
         "for_log":i
-        file_2:w
+        file_2:
+    }
+}
+logg_2
+{
+    log_12
+    {
+        default
+        file_1:tf
+        file_2:tf
+    }
+    log_133131
+    {
+        %t %m
+        "for_log":i
+        file_2:
     }
 }
 

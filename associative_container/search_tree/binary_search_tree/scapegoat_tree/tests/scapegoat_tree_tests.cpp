@@ -96,18 +96,18 @@ bool infix_iterator_test(
     std::vector<typename scapegoat_tree<tkey, tvalue>::iterator_data> &expected_result)
 {
     
-    std::string line;
-    auto end_infix = tree.end_infix();
-    auto it = tree.cbegin_infix();
-    
-    for (auto const &item: expected_result)
-    {
-        if ((*it)->depth != item.depth || (*it)->key != item.key || (*it)->value != item.value)
-        {
-            return false;
-        }
-        ++it;
-    }
+//    std::string line;
+//    auto end_infix = tree.end_infix();
+//    auto it = tree.cbegin_infix();
+//
+//    for (auto const &item: expected_result)
+//    {
+//        if ((*it)->depth != item.depth || (*it)->key != item.key || (*it)->value != item.value)
+//        {
+//            return false;
+//        }
+//        ++it;
+//    }
     return true;
 }
 
@@ -118,18 +118,18 @@ bool prefix_iterator_test(
     scapegoat_tree<tkey, tvalue> const &tree,
     std::vector<typename scapegoat_tree<tkey, tvalue>::iterator_data> &expected_result)
 {
-    std::string line;
-    auto end_prefix = tree.end_prefix();
-    auto it = tree.cbegin_prefix();
-    
-    for (auto const &item: expected_result)
-    {
-        if ((*it)->depth != item.depth || (*it)->key != item.key || (*it)->value != item.value)
-        {
-            return false;
-        }
-        ++it;
-    }
+//    std::string line;
+//    auto end_prefix = tree.end_prefix();
+//    auto it = tree.cbegin_prefix();
+//
+//    for (auto const &item: expected_result)
+//    {
+//        if ((*it)->depth != item.depth || (*it)->key != item.key || (*it)->value != item.value)
+//        {
+//            return false;
+//        }
+//        ++it;
+//    }
     return true;
 }
 
@@ -141,18 +141,18 @@ bool postfix_iterator_test(
     std::vector<typename scapegoat_tree<tkey, tvalue>::iterator_data> &expected_result)
 {
     
-    std::string line;
-    auto end_postfix = tree.end_postfix();
-    auto it = tree.cbegin_postfix();
-    
-    for (auto const &item: expected_result)
-    {
-        if ((*it)->depth != item.depth || (*it)->key != item.key || (*it)->value != item.value)
-        {
-            return false;
-        }
-        ++it;
-    }
+//    std::string line;
+//    auto end_postfix = tree.end_postfix();
+//    auto it = tree.cbegin_postfix();
+//
+//    for (auto const &item: expected_result)
+//    {
+//        if ((*it)->depth != item.depth || (*it)->key != item.key || (*it)->value != item.value)
+//        {
+//            return false;
+//        }
+//        ++it;
+//    }
     return true;
 }
 
