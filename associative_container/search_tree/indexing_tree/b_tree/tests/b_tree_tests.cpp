@@ -777,6 +777,8 @@ int main(
     int argc,
     char **argv)
 {
+
+    search_tree<int, int> *tree = new b_tree<int, int>(4);
     testing::InitGoogleTest(&argc, argv);
 
     return RUN_ALL_TESTS();

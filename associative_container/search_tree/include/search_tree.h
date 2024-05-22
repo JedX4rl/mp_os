@@ -23,9 +23,9 @@ class search_tree:
     protected logger_guardant
 {
 
-public:
+protected:
     
-    struct __attribute__((unused)) common_node
+    struct common_node
     {
     
     public:
@@ -37,9 +37,12 @@ public:
         size_t virtual_size;
     
     public:
-    
-        common_node();
-        
+
+        explicit common_node(
+                typename associative_container<tkey, tvalue>::key_value_pair *keys_and_values,
+                common_node **subtrees,
+                size_t t);
+
         virtual ~common_node() noexcept;
         
     };
@@ -59,18 +62,87 @@ protected:
 protected:
 
     void *_root;
-
     logger *_logger;
-
     allocator *_allocator;
+
+protected:
+
+    common_node *create_node(
+            size_t t) const
+    {
+        auto *keys_and_values = reinterpret_cast<typename associative_container<tkey, tvalue>::key_value_pair*>(allocate_with_guard(
+                sizeof (typename associative_container<tkey, tvalue>::key_value_pair), 2 * t - 1));
+
+        auto *subtrees = reinterpret_cast<typename search_tree<tkey, tvalue>::common_node **>(allocate_with_guard(
+                sizeof(typename search_tree<tkey, tvalue>::common_node*), 2 * t));
+
+        auto *node = reinterpret_cast<typename search_tree<tkey, tvalue>::common_node*>(allocate_with_guard(
+                sizeof(typename search_tree<tkey, tvalue>::common_node), 1));
+
+        allocator::construct(node, keys_and_values, subtrees, t);
+
+        return node;
+    }
+
+    void destroy_node(common_node *node_to_destroy)
+    {
+        for (int i = 0; i < node_to_destroy->virtual_size; ++i)
+        {
+            allocator::destruct(node_to_destroy->keys_and_values + i);
+        }
+
+        deallocate_with_guard(node_to_destroy->keys_and_values);
+        deallocate_with_guard(node_to_destroy->subtrees);
+        allocator::destruct(node_to_destroy);
+        deallocate_with_guard(node_to_destroy);
+    }
+
+    int node_find_path(
+            typename search_tree<tkey, tvalue>::common_node const *node,
+            tkey const &key,
+            size_t left_bound_inclusive,
+            size_t right_bound_inclusive);
+
+    void node_insert(
+            typename search_tree<tkey, tvalue>::common_node *node,
+            typename associative_container<tkey, tvalue>::key_value_pair &&kvp,
+            size_t subtree_index,
+            typename search_tree<tkey, tvalue>::common_node *right_subtree);
+
+    std::pair<typename search_tree<tkey, tvalue>::common_node*, typename associative_container<tkey, tvalue>::key_value_pair> node_split(
+            typename search_tree<tkey, tvalue>::common_node *node,
+            typename associative_container<tkey, tvalue>::key_value_pair &&kvp,
+            size_t subtree_index,
+            typename search_tree<tkey, tvalue>::common_node *right_subtree);
+
+    void merge_nodes(
+            typename search_tree<tkey, tvalue>::common_node *parent,
+            int left_subtree_index);
+
+protected:
+    template<
+            typename T>
+    inline void swap(
+            T &&one,
+            T &&another)
+    {
+        T temp = std::forward<T>(one);
+        one = std::forward<T>(another);
+        another = std::move(temp);
+    }
+
+protected:
+
+    std::stack<std::pair<typename search_tree<tkey, tvalue>::common_node **, int>> find_path(
+            tkey const &key);
 
 protected:
     
     explicit search_tree(
-        std::function<int(tkey const &, tkey const &)> keys_comparer = std::less<tkey>(), //key comparator ( tkey const &, tkey const & ) -> int
+        std::function<int(tkey const &, tkey const &)> keys_comparer = std::less<tkey>(),
         allocator *allocator = nullptr,
         logger *logger = nullptr,
-        void *_root = nullptr); //search tree constructor
+        void *_root = nullptr);
     
 public:
     
@@ -91,11 +163,20 @@ protected:
 //region search_tree<tkey, tvalue>::node implementation
 
 template<
-    typename tkey,
-    typename tvalue>
-search_tree<tkey, tvalue>::common_node::common_node()
+        typename tkey,
+        typename tvalue>
+search_tree<tkey, tvalue>::common_node::common_node(
+        typename associative_container<tkey, tvalue>::key_value_pair *keys_and_values,
+        common_node **subtrees,
+        size_t t):
+        keys_and_values(keys_and_values),
+        subtrees(subtrees),
+        virtual_size(0)
 {
-    throw not_implemented("template<typename tkey, typename tvalue> search_tree<tkey, tvalue>::common_node::common_node()", "your code should be here...");
+    for (auto i = 0; i < 2 * t; i++)
+    {
+        subtrees[i] = nullptr;
+    }
 }
 
 template<
@@ -103,10 +184,202 @@ template<
     typename tvalue>
 search_tree<tkey, tvalue>::common_node::~common_node() noexcept
 {
-    throw not_implemented("template<typename tkey, typename tvalue> search_tree<tkey, tvalue>::common_node::~common_node() noexcept", "your code should be here...");
+    virtual_size = 0;
 }
 
 // endregion search_tree<tkey, tvalue>::node implementation
+
+template<
+        typename tkey,
+        typename tvalue>
+int search_tree<tkey, tvalue>::node_find_path(
+        typename search_tree<tkey, tvalue>::common_node const *node,
+        tkey const &key,
+        size_t left_bound_inclusive,
+        size_t right_bound_inclusive)
+{
+    int index = 0;
+    while (true)
+    {
+        index = (left_bound_inclusive + right_bound_inclusive) / 2;
+        auto comparison_result = _keys_comparer(key, node->keys_and_values[index].key);
+        if (comparison_result == 0)
+        {
+            return index;
+        }
+        if (left_bound_inclusive == right_bound_inclusive)
+        {
+            return  -(index + (comparison_result < 0
+            ? 0
+            : 1) + 1);
+        }
+
+        if (comparison_result < 0)
+        {
+            right_bound_inclusive = index;
+        }
+        else
+        {
+            left_bound_inclusive = index + 1;
+        }
+    }
+}
+
+template<
+        typename tkey,
+        typename tvalue>
+void search_tree<tkey, tvalue>::node_insert(
+        typename search_tree<tkey, tvalue>::common_node *node,
+        typename associative_container<tkey, tvalue>::key_value_pair &&kvp,
+        size_t subtree_index,
+        typename search_tree<tkey, tvalue>::common_node *right_subtree)
+{
+    allocator::construct(node->keys_and_values + node->virtual_size, std::move(kvp));
+    node->subtrees[node->virtual_size + 1] = right_subtree;
+
+    for (auto i = 0; i < node->virtual_size - subtree_index; i++)
+    {
+        swap(std::move(node->keys_and_values[node->virtual_size - i]),
+             std::move(node->keys_and_values[node->virtual_size - i - 1]));
+        swap(std::move(node->subtrees[node->virtual_size + 1 - i]), std::move(node->subtrees[node->virtual_size - i]));
+    }
+    ++node->virtual_size;
+}
+
+template<
+        typename tkey,
+        typename tvalue>
+std::pair<typename search_tree<tkey, tvalue>::common_node *, typename associative_container<tkey, tvalue>::key_value_pair> search_tree<tkey, tvalue>::node_split(
+        typename search_tree<tkey, tvalue>::common_node* node,
+        typename associative_container<tkey, tvalue>::key_value_pair &&kvp,
+        size_t subtree_index,
+        typename search_tree<tkey, tvalue>::common_node* right_subtree)
+{
+    auto const t = (node->virtual_size + 1) / 2;
+    auto const mediant_index  = t;
+
+    if (subtree_index != mediant_index)
+    {
+        swap(std::move(kvp), std::move(node->keys_and_values[mediant_index - (subtree_index < mediant_index
+                                                                              ? 1
+                                                                              : 0)]));
+
+        swap(std::move(right_subtree), std::move(node->subtrees[mediant_index + (subtree_index < mediant_index
+                                                                                 ? 0
+                                                                                 : 1)]));
+    }
+
+    auto index = mediant_index;
+    int index_increment = index < subtree_index ? 1 : -1;
+
+    if (index_increment == -1)
+    {
+        --index;
+    }
+
+    if (index < subtree_index)
+    {
+        while (index + 1 != subtree_index)
+        {
+            swap(std::move(node->keys_and_values[index]), std::move(node->keys_and_values[index + 1]));
+
+            swap(std::move(node->subtrees[index + 1]), std::move(node->subtrees[index + 2]));
+
+            ++index;
+        }
+    }
+
+    else
+    {
+        while (index != subtree_index)
+        {
+            swap(std::move(node->keys_and_values[index]), std::move(node->keys_and_values[index - 1]));
+
+            swap(std::move(node->subtrees[index + 1]), std::move(node->subtrees[index]));
+
+            --index;
+        }
+    }
+
+    common_node *new_node = create_node(t);
+    for (int i = 0; i < t - 1; ++i)
+    {
+        allocator::construct(new_node->keys_and_values + i, std::move(node->keys_and_values[t + i]));
+        allocator::destruct(node->keys_and_values + t + i);
+        swap(std::move(new_node->subtrees[1 + i]), std::move(node->subtrees[t + 1 + i]));
+    }
+
+    new_node->subtrees[0] = right_subtree;
+    new_node->virtual_size = t - 1;
+    node->virtual_size = t;
+
+    return std::make_pair(new_node, std::move(kvp));
+}
+
+template<
+        typename tkey,
+        typename tvalue>
+void search_tree<tkey, tvalue>::merge_nodes(
+        typename search_tree<tkey, tvalue>::common_node *parent,
+        int left_subtree_index)
+{
+    auto *left_subtree = parent->subtrees[left_subtree_index];
+    auto *right_subtree = parent->subtrees[left_subtree_index + 1];
+
+    allocator::construct(left_subtree->keys_and_values + left_subtree->virtual_size++, std::move(parent->keys_and_values[left_subtree_index]));
+    for (auto i = left_subtree_index; i < parent->virtual_size - 1; ++i)
+    {
+        search_tree<tkey, tvalue>::swap(std::move(parent->keys_and_values[i]), std::move(parent->keys_and_values[i + 1]));
+
+        search_tree<tkey, tvalue>::swap(std::move(parent->subtrees[i + 1]), std::move(parent->subtrees[i + 2]));
+    }
+
+    allocator::destruct(parent->keys_and_values + --parent->virtual_size);
+
+    for (auto i = 0; i < right_subtree->virtual_size; i++)
+    {
+        allocator::construct(left_subtree->keys_and_values + left_subtree->virtual_size, std::move(right_subtree->keys_and_values[i]));
+        left_subtree->subtrees[left_subtree->virtual_size++] = right_subtree->subtrees[i];
+    }
+    left_subtree->subtrees[left_subtree->virtual_size] = right_subtree->subtrees[right_subtree->virtual_size];
+
+    destroy_node(right_subtree);
+}
+
+template<
+        typename tkey,
+        typename tvalue>
+std::stack<std::pair<typename search_tree<tkey, tvalue>::common_node **, int>> search_tree<tkey, tvalue>::find_path(
+        tkey const &key)
+{
+    std::stack<std::pair<typename search_tree<tkey, tvalue>::common_node **, int>> result;
+
+    int index = -1;
+    if (_root == nullptr)
+    {
+        result.push(std::pair<typename search_tree<tkey, tvalue>::common_node **, int>(reinterpret_cast<typename search_tree<tkey, tvalue>::common_node**>(&_root), index));
+
+        return result;
+    }
+
+
+    auto **iterator = reinterpret_cast<search_tree<tkey, tvalue>::common_node**>(&_root);
+    while (*iterator != nullptr && index < 0)
+    {
+        index = node_find_path(*iterator, key, 0, (*iterator)->virtual_size - 1);
+
+        result.push(std::pair<typename search_tree<tkey, tvalue>::common_node **, int>(iterator, index));
+
+        if (index < 0)
+        {
+            iterator = (*iterator)->subtrees - index - 1;
+        }
+    }
+
+    return result;
+}
+
+
 
 template<
     typename tkey,

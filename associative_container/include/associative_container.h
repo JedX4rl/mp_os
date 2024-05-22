@@ -21,7 +21,26 @@ public:
         
         tkey key;
         tvalue value;
-        
+
+        key_value_pair(tkey const &_key, tvalue const & _value): key(_key), value(_value)
+        {
+
+        }
+
+        key_value_pair(tkey const &_key, tvalue && _value): key(_key), value(std::move(_value))
+        {
+
+        }
+
+//        key_value_pair(key_value_pair const &other) = default;
+//        key_value_pair(key_value_pair &&other) = default;
+//
+//        key_value_pair &operator=(key_value_pair const & other) = default;
+//        key_value_pair &operator=(key_value_pair  && other) = default;
+//        ~key_value_pair() = default;
+
+
+
     };
     
     struct key_value_ptr_pair
@@ -31,6 +50,7 @@ public:
         
         tkey key;
         tvalue *value_ptr;
+
         
     };
 
